@@ -164,7 +164,7 @@ void setup(void) {
   uint16_t identifier = tft.readID();
   tft.begin(identifier);
   tft.fillScreen(BLACK);
-  //tft.setRotation(3);
+  tft.setRotation(2);
   // tft.setTextColor(WHITE);
   // tft.setTextSize(6);
   // Set up Timer1 interrupt
