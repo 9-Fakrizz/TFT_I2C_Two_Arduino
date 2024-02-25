@@ -9,6 +9,7 @@
 
 int button_pin[3] = {8, 9, 10};
 int buttonState[3];
+String select_menu = " ";
 
 // Function prototypes
 void i2c_start(int value);
@@ -32,9 +33,13 @@ void loop() {
   
   readButtons();
   printButtons();
-  if(buttonState[0]==LOW) i2c_start(1);
-  else if(buttonState[1]==LOW) i2c_start(2);
-  else if(buttonState[2]==LOW) i2c_start(3);
+  if(buttonState[0]==LOW) write_i2c(1);
+  else if(buttonState[1]==LOW) write_i2c(2);
+  else if(buttonState[2]==LOW){
+    write_i2c(3);
+    select_menu = receive_i2c();
+    Serial.println("Select Menu is "+select_menu);
+  }
 
   delay(200);  
 }
@@ -55,16 +60,17 @@ void printButtons() {
   Serial.println("");
 }
 
-void i2c_start(int value){
+void write_i2c(int value){
   // Write a charatre to the Slave
   Wire.beginTransmission(SLAVE_ADDR);
   Wire.write(value);
   Wire.endTransmission();
 
+}
+
+String receive_i2c(){
   Serial.println("Receive data");
-  
   // Read response from Slave
-  // Read back 5 characters
   Wire.requestFrom(SLAVE_ADDR,ANSWERSIZE);
   
   // Add characters to string
@@ -72,7 +78,7 @@ void i2c_start(int value){
   while (Wire.available()) {
       response = Wire.read();
   } 
-  Serial.println(response);
+  return String(response);
 }
 
 
