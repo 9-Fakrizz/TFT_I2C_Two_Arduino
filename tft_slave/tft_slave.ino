@@ -35,6 +35,7 @@ int menu = 0;
 String mode_sel_name[4] = {"A1","B2","C3","D4"};
 int sel_arrow = 0;
 String read_but = "";
+bool warning = false;
 
 
 void receiveEvent() {
@@ -48,6 +49,7 @@ void receiveEvent() {
   // Print to Serial Monitor
   Serial.println("Receive event");
   Serial.println("x : "+String(x));
+  if(read_but == "5") warning = true;
 }
  
 void requestEvent() {
@@ -76,6 +78,17 @@ void clear_arrow() {
     tft.print(">");
   }
 }
+
+void displayWarning(){
+  
+  tft.setTextColor(WHITE);
+  tft.setTextSize(4);
+  tft.setCursor(50, 100);
+  tft.println(" CLOSE THE WINDOWS");
+  tft.println(" PlEASE ...");
+
+}
+
 
 void displayData() {
   if (menu == 0) {
@@ -174,19 +187,20 @@ void setup(void) {
 void loop(void) {
   unsigned long start = micros();
   displayData();
-  while(menu == 0){
-    //displayData();
-    //Serial.println("menu still 0-------------------");
+  while(warning == false){
     //Function to run when data requested from master
     Wire.onRequest(requestEvent); 
     //Function to run when data received from master
     Wire.onReceive(receiveEvent);
-    
     sel_menu();
     Serial.println(read_but);
     delay(100);
     read_but = "0";
     clear_arrow();
+  }
+  if(warning == true){
+    displayWarning();
+    warning = false;
   }
 
 }
